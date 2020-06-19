@@ -96,8 +96,9 @@ public class Admin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sales App");
-        setMaximumSize(new java.awt.Dimension(960, 450));
-        setMinimumSize(new java.awt.Dimension(960, 450));
+        setMaximumSize(new java.awt.Dimension(960, 447));
+        setMinimumSize(new java.awt.Dimension(960, 447));
+        setPreferredSize(new java.awt.Dimension(960, 447));
         setResizable(false);
 
         jTabbedPane1.setMaximumSize(new java.awt.Dimension(945, 385));
@@ -125,6 +126,11 @@ public class Admin extends javax.swing.JFrame {
             }
         ));
         tblProduct.setGridColor(new java.awt.Color(255, 255, 255));
+        tblProduct.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblProductMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(tblProduct);
 
         txtprPrice.setToolTipText("Fiyat");
@@ -156,8 +162,18 @@ public class Admin extends javax.swing.JFrame {
         });
 
         jButton4.setText("Ürün Düzenle");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Ürün Sil");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         lblTitle1.setFont(new java.awt.Font("Dialog", 2, 12)); // NOI18N
         lblTitle1.setText("Admin");
@@ -552,7 +568,7 @@ public class Admin extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -684,11 +700,15 @@ public class Admin extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Lütfen değiştirmek istediğiniz kategoriyi seçiniz.!");
         } else {
             String ctitle = JOptionPane.showInputDialog("Kategori adı giriniz: ");
-            CategoryModel cm = new CategoryModel();
-            int statu = cm.categoryUpdate(cid, ctitle);
-            if ( statu > 0 ){
+            if ( ctitle.equals("") ){
+                JOptionPane.showMessageDialog(rootPane, "Kategori adı boş olamaz.!");
+            } else {
+                CategoryModel cm = new CategoryModel();
+                int statu = cm.categoryUpdate(cid, ctitle);
+                if ( statu > 0 ){
                 JOptionPane.showMessageDialog(rootPane, "Kategori adı başarıyla değiştirildi.!");
                 categoryResultRefresh();
+                }
             }
         }
     }//GEN-LAST:event_jButton6ActionPerformed
@@ -709,6 +729,7 @@ public class Admin extends javax.swing.JFrame {
                 int uid = Util.us.getUid();
                 um.updateAdmin(uid, n, u, pw_new);
                 JOptionPane.showMessageDialog(rootPane, "Şifreniz başarıyla değiştirildi.");
+                Util.us.setUname(u);
                 adminRefresh();
                 txtAname.setText("");
                 txtAusername.setText("");
@@ -717,6 +738,44 @@ public class Admin extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButton11ActionPerformed
+    int prid = -1;
+    private void tblProductMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProductMouseClicked
+        int row = tblProduct.getSelectedRow();
+        prid = (int)tblProduct.getValueAt(row, 0);
+    }//GEN-LAST:event_tblProductMouseClicked
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        if ( prid == -1 ){
+            JOptionPane.showMessageDialog(rootPane, "Lütfen silmek istediğiniz ürünü seçiniz.!");
+        } else {
+            int answer = JOptionPane.showConfirmDialog(rootPane, "Seçili ürünü silmek istediğinize emin misiniz?", "Ürün sil!", JOptionPane.YES_NO_OPTION);
+            if ( answer == 0 ){
+                ProductModel pm = new ProductModel();
+                pm.deleteProduct(prid);
+                productResultRefresh();
+            }
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        if ( prid == -1 ){
+            JOptionPane.showMessageDialog(rootPane, "Lütfen düzenlemek istediğiniz ürünü seçiniz.!");
+        } else {
+            int row = tblProduct.getSelectedRow();
+            ProductUpdate.prid = this.prid;
+            ProductUpdate.cmbCat = (int)tblProduct.getValueAt(row, 1);
+            ProductUpdate.title = "" + tblProduct.getValueAt(row, 2);
+            ProductUpdate.price = (double)tblProduct.getValueAt(row, 3);
+            ProductUpdate.barcode = "" + tblProduct.getValueAt(row, 4);
+            ProductUpdate.shelf = "" + tblProduct.getValueAt(row, 5);
+            ProductUpdate.stock = (int)tblProduct.getValueAt(row, 6);
+            ProductUpdate.note = "" + tblProduct.getValueAt(row, 7);
+            
+            ProductUpdate pu = new ProductUpdate();
+            pu.setVisible(true);
+            dispose();
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

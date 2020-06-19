@@ -34,6 +34,44 @@ public class ProductModel {
         return statu;
     }
     
+    public int deleteProduct (int prid){
+        int statu = -1;
+        try {
+            DB db = new DB();
+            String query = "delete from product where prid = ?";
+            PreparedStatement pre = db.fncPre(query);
+            pre.setInt(1, prid);
+            statu = pre.executeUpdate();
+            db.close();
+        } catch (Exception e) {
+            System.err.println("deleteProduct Error: " + e);
+        }
+        return statu;
+    }
+    
+    public int updateProduct(int prid, int prcid, String prtitle, double prprice,
+            String prbarcode, String prshelf, int prstock, String prnote ){
+        int statu = -1;
+        try {
+            DB db = new DB();
+            String query = "update product set prcid = ?, prtitle = ?, prprice = ?, prbarcode = ?, prshelf = ?, prstock = ?, prnote = ? where prid = ?";
+            PreparedStatement pre = db.fncPre(query);
+            pre.setInt(1, prcid);
+            pre.setString(2, prtitle);
+            pre.setDouble(3, prprice);
+            pre.setString(4, prbarcode);
+            pre.setString(5, prshelf);
+            pre.setInt(6, prstock);
+            pre.setString(7, prnote);
+            pre.setInt(8, prid);
+            statu = pre.executeUpdate();
+            db.close();
+        } catch (Exception e) {
+            System.err.println("updateProduct Error: " + e);
+        }
+        return statu;
+    }
+    
     public void productAllResult(){
         prls.clear();
         try {

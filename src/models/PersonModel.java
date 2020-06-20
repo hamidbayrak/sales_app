@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import props.Person;
-import useutils.DB;
+import useutils.*;
 
 public class PersonModel {
     
@@ -69,6 +69,22 @@ public class PersonModel {
         return statu;
     }
     
+    public int personPwInsert(String pnameSurname, String uusername, String upassword ) {
+        int statu = -1;
+        try {
+            DB db = new DB();
+            String query = "insert into user values ( null, ?, ?, ?, 0 )";
+            PreparedStatement pre = db.fncPre(query);
+            pre.setString(1, pnameSurname);
+            pre.setString(2, uusername);
+            pre.setString(3, new Util().md5Generator(upassword));
+            statu = pre.executeUpdate();
+            db.close();
+        } catch (Exception e) {
+            System.err.println("personPassworInsert error : " + e);
+        }
+        return statu;
+    }    
     
     public void personAllResult() {
         pls.clear();

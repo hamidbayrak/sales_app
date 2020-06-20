@@ -143,6 +143,7 @@ public class Admin extends javax.swing.JFrame {
         txtprTitle.setPlaceholder("Ürün Başlığı");
 
         txtprNote.setColumns(20);
+        txtprNote.setFont(new java.awt.Font("Dialog", 0, 13)); // NOI18N
         txtprNote.setRows(5);
         jScrollPane5.setViewportView(txtprNote);
 
@@ -360,6 +361,7 @@ public class Admin extends javax.swing.JFrame {
         });
 
         txtpaddress.setColumns(20);
+        txtpaddress.setFont(new java.awt.Font("Dialog", 0, 13)); // NOI18N
         txtpaddress.setRows(5);
         jScrollPane4.setViewportView(txtpaddress);
 
@@ -389,7 +391,7 @@ public class Admin extends javax.swing.JFrame {
             }
         });
 
-        jButton9.setText("Personel Düzenle");
+        jButton9.setText("Personel Güncelle");
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton9ActionPerformed(evt);
@@ -397,6 +399,11 @@ public class Admin extends javax.swing.JFrame {
         });
 
         jButton10.setText("Personel Şifre Ata");
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
 
         lblTitle.setFont(new java.awt.Font("Dialog", 2, 12)); // NOI18N
         lblTitle.setText("Admin");
@@ -644,6 +651,12 @@ public class Admin extends javax.swing.JFrame {
     private void tblPersonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPersonMouseClicked
         int row = tblPerson.getSelectedRow();
         pid = (int) tblPerson.getValueAt(row, 0);
+        txtpname.setText(""+tblPerson.getValueAt(row, 1));
+        txtpsurname.setText(""+tblPerson.getValueAt(row, 2));
+        txtpmail.setText(""+tblPerson.getValueAt(row, 3));
+        txtpphone.setText(""+tblPerson.getValueAt(row, 4));
+        txtpaddress.setText(""+tblPerson.getValueAt(row, 5));
+
     }//GEN-LAST:event_tblPersonMouseClicked
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
@@ -655,31 +668,49 @@ public class Admin extends javax.swing.JFrame {
                 PersonModel pm = new PersonModel();
                 pm.personDelete(pid);
                 personResultRefresh();
+                pid = -1;
+                txtpname.setText("");
+                txtpsurname.setText("");
+                txtpmail.setText("");
+                txtpphone.setText("");
+                txtpaddress.setText("");
             }
         }
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         if (pid == -1){
-            JOptionPane.showMessageDialog(rootPane, "Lütfen düzenlemek istediğiniz personeli seçiniz.!");
+            JOptionPane.showMessageDialog(rootPane, "Lütfen güncellemek istediğiniz personeli seçiniz.!");
         } else {
             int row = tblPerson.getSelectedRow();
-            PersonUpdate.pid = this.pid;
-            PersonUpdate.name = "" + tblPerson.getValueAt(row, 1);
-            PersonUpdate.surname = "" + tblPerson.getValueAt(row, 2);
-            PersonUpdate.mail = "" + tblPerson.getValueAt(row, 3);
-            PersonUpdate.tel = "" + tblPerson.getValueAt(row, 4);
-            PersonUpdate.address = "" + tblPerson.getValueAt(row, 5);
-            
-            PersonUpdate pu = new PersonUpdate();
-            pu.setVisible(true);
-            dispose();
+            String n = txtpname.getText().trim();
+            String s = txtpsurname.getText().trim();
+            String m = txtpmail.getText().trim();
+            String t = txtpphone.getText().trim();
+            String a = txtpaddress.getText().trim();
+            if ( n.equals("") || s.equals("") || m.equals("") || t.equals("") || a.equals("")){
+                JOptionPane.showMessageDialog(rootPane, "Personel bilgileri boş olamaz.!");
+            } else {
+                PersonModel pm = new PersonModel();
+                int statu = pm.personUpdate(pid, n, s, m, t, a);
+                if (statu > 0){
+                JOptionPane.showMessageDialog(rootPane, "Personel bilgileri başarıyla güncellendi.");
+                personResultRefresh();
+                pid = -1;
+                txtpname.setText("");
+                txtpsurname.setText("");
+                txtpmail.setText("");
+                txtpphone.setText("");
+                txtpaddress.setText("");
+                }                
+            }
         }
     }//GEN-LAST:event_jButton9ActionPerformed
     int cid = -1;
     private void tblCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCategoryMouseClicked
         int row = tblCategory.getSelectedRow();
         cid = (int) tblCategory.getValueAt(row, 0);
+        txtCategoryTitle.setText(""+tblCategory.getValueAt(row, 1));
     }//GEN-LAST:event_tblCategoryMouseClicked
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -690,27 +721,26 @@ public class Admin extends javax.swing.JFrame {
             if ( answer == 0 ){
                 CategoryModel cm = new CategoryModel();
                 cm.categoryDelete(cid);
+                cid = -1;
+                txtCategoryTitle.setText("");
                 categoryResultRefresh();
             }
         }
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        if ( cid == -1 ){
-            JOptionPane.showMessageDialog(rootPane, "Lütfen değiştirmek istediğiniz kategoriyi seçiniz.!");
+        if ( cid == -1){
+            JOptionPane.showMessageDialog(rootPane, "Lütfen silmek istediğiniz kategoriyi seçiniz.!");
         } else {
-            String ctitle = JOptionPane.showInputDialog("Kategori adı giriniz: ");
-            if ( ctitle.equals("") ){
-                JOptionPane.showMessageDialog(rootPane, "Kategori adı boş olamaz.!");
-            } else {
-                CategoryModel cm = new CategoryModel();
-                int statu = cm.categoryUpdate(cid, ctitle);
-                if ( statu > 0 ){
+            CategoryModel cm = new CategoryModel();
+            int statu = cm.categoryUpdate(cid, txtCategoryTitle.getText().trim());
+            if ( statu > 0 ){
                 JOptionPane.showMessageDialog(rootPane, "Kategori adı başarıyla değiştirildi.!");
                 categoryResultRefresh();
-                }
+                txtCategoryTitle.setText("");
+                cid = -1;
             }
-        }
+        }        
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
@@ -742,6 +772,13 @@ public class Admin extends javax.swing.JFrame {
     private void tblProductMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProductMouseClicked
         int row = tblProduct.getSelectedRow();
         prid = (int)tblProduct.getValueAt(row, 0);
+        cmbCategory.setSelectedIndex((int)tblProduct.getValueAt(row, 1));
+        txtprTitle.setText(""+tblProduct.getValueAt(row, 2));
+        txtprPrice.setText(""+tblProduct.getValueAt(row, 3));
+        txtprBarcode.setText(""+tblProduct.getValueAt(row, 4));
+        txtprShelf.setText(""+tblProduct.getValueAt(row, 5));
+        txtprStock.setText(""+tblProduct.getValueAt(row, 6));
+        txtprNote.setText(""+tblProduct.getValueAt(row, 7));
     }//GEN-LAST:event_tblProductMouseClicked
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -753,6 +790,14 @@ public class Admin extends javax.swing.JFrame {
                 ProductModel pm = new ProductModel();
                 pm.deleteProduct(prid);
                 productResultRefresh();
+                prid = -1;
+                cmbCategory.setSelectedIndex(0);
+                txtprTitle.setText("");
+                txtprPrice.setText("");
+                txtprBarcode.setText("");
+                txtprShelf.setText("");
+                txtprStock.setText("");
+                txtprNote.setText("");
             }
         }
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -761,21 +806,54 @@ public class Admin extends javax.swing.JFrame {
         if ( prid == -1 ){
             JOptionPane.showMessageDialog(rootPane, "Lütfen düzenlemek istediğiniz ürünü seçiniz.!");
         } else {
-            int row = tblProduct.getSelectedRow();
-            ProductUpdate.prid = this.prid;
-            ProductUpdate.cmbCat = (int)tblProduct.getValueAt(row, 1);
-            ProductUpdate.title = "" + tblProduct.getValueAt(row, 2);
-            ProductUpdate.price = (double)tblProduct.getValueAt(row, 3);
-            ProductUpdate.barcode = "" + tblProduct.getValueAt(row, 4);
-            ProductUpdate.shelf = "" + tblProduct.getValueAt(row, 5);
-            ProductUpdate.stock = (int)tblProduct.getValueAt(row, 6);
-            ProductUpdate.note = "" + tblProduct.getValueAt(row, 7);
-            
-            ProductUpdate pu = new ProductUpdate();
-            pu.setVisible(true);
-            dispose();
-        }
+            int cmb = cmbCategory.getSelectedIndex();
+            String c = txtprTitle.getText().trim();
+            String p = txtprPrice.getText().trim();
+            String b = txtprBarcode.getText().trim();
+            String s = txtprShelf.getText().trim();
+            String st = txtprStock.getText().trim();
+            String n = txtprNote.getText().trim();
+            if ( cmb == 0 || c.equals("") || p.equals("") || b.equals("") || s.equals("") || st.equals("") || n.equals("")){
+                JOptionPane.showMessageDialog(rootPane, "Ürün bilgileri boş olamaz.!");
+            } else {
+                ProductModel pm = new ProductModel();
+                double pr = Double.valueOf(p);
+                int stck = Integer.valueOf(st);
+                int statu = pm.updateProduct(prid,cmb,c,pr,b,s,stck,n);
+                if ( statu > 0 ){
+                    JOptionPane.showMessageDialog(rootPane, "Ürün bilgileri başarıyla güncellendi.");
+                    productResultRefresh();
+                    prid = -1;
+                    cmbCategory.setSelectedIndex(0);
+                    txtprTitle.setText("");
+                    txtprPrice.setText("");
+                    txtprBarcode.setText("");
+                    txtprShelf.setText("");
+                    txtprStock.setText("");
+                    txtprNote.setText("");
+                    }
+                }
+            }
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        if ( pid == -1){
+            JOptionPane.showMessageDialog(rootPane, "Lütfen şifre atamak istediğiniz kullanıcıyı seçiniz.!");
+        } else {
+            String uusername = JOptionPane.showInputDialog(rootPane, "Lütfen kullanıcı adı giriniz ");
+            String upassword = JOptionPane.showInputDialog(rootPane, "Lütfen şifre giriniz ");
+            if ( uusername.equals("") || upassword.equals("")){
+                JOptionPane.showMessageDialog(rootPane, "Kullanıcı adı - şifre boş olamaz.!");
+            } else {
+                String nameSurname = txtpname.getText().trim() + " " + txtpsurname.getText().trim();
+                int statu = pmd.personPwInsert(nameSurname, uusername, upassword);
+                if ( statu > 0){
+                    JOptionPane.showMessageDialog(rootPane, "Şifre ataması başarılı.!");
+                    pid = -1;
+                }
+            } 
+        }
+    }//GEN-LAST:event_jButton10ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

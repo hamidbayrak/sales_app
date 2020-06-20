@@ -45,14 +45,14 @@ public class login extends javax.swing.JFrame {
 
         jLabel3.setText("Şifre");
 
-        txtUsername.setText("admin01");
+        txtUsername.setText("ali001");
         txtUsername.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtUsernameKeyReleased(evt);
             }
         });
 
-        txtPassword.setText("12345");
+        txtPassword.setText("321");
         txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtPasswordKeyReleased(evt);

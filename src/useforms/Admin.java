@@ -35,7 +35,7 @@ public class Admin extends javax.swing.JFrame {
     }
     
     private void productResultRefresh(){
-        prmd.productAllResult();
+        prmd.productAllResult("");
         tblProduct.setModel(prmd.productTable());
     }
     

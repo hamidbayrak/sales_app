@@ -72,11 +72,18 @@ public class ProductModel {
         return statu;
     }
     
-    public void productAllResult(){
+    public void productAllResult(String search){
         prls.clear();
+        String query = "";
+        if ( search.equals("") ){
+            query = "select * from product";
+        } else {
+            query = "SELECT * FROM product WHERE prtitle like '%" + search + "%' or prprice like '%" + search + "%' "
+                    + "or prbarcode like '%" + search + "%' or prshelf like '%" + search + "%' or prstock like '%" + search + "%' "
+                    + "or prnote like '%" + search + "%' ";
+        }
         try {
             DB db = new DB();
-            String query = "Select * from product";
             ResultSet rs = db.fncPre(query).executeQuery();
             while (rs.next()){
                 Product prd = new Product();
@@ -116,4 +123,5 @@ public class ProductModel {
         }
         return dtm;
     }
+    
 }

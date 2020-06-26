@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 import props.Basket;
 import useutils.DB;
@@ -12,15 +13,16 @@ import useutils.Util;
 public class BasketModel {
     
     public List<Basket> bls = new ArrayList<>();
+    Util ut = new Util();
     
     public DefaultTableModel basketTable() {
         DefaultTableModel dtm = new DefaultTableModel();
         
-        dtm.addColumn("bid");
-        dtm.addColumn("prtitle");
-        dtm.addColumn("prprice");
-        dtm.addColumn("uname");
-        dtm.addColumn("bdate");
+        dtm.addColumn("Id");
+        dtm.addColumn("Ürün Adı");
+        dtm.addColumn("Fiyatı");
+        dtm.addColumn("Kullanıcı");
+        dtm.addColumn("Tarih");
         for ( Basket item : bls ) {
             Object[] row = { item.getBid(), item.getPrtitle(), item.getPrprice(), item.getUname(), item.getBdate() };
             dtm.addRow(row);
@@ -102,4 +104,13 @@ public class BasketModel {
         }
         return statu;
     } 
+
+    public DefaultComboBoxModel<String> exchangeCombobox() {
+        DefaultComboBoxModel<String> dcm = new DefaultComboBoxModel<>();
+        for (Object item : ut.xmlRead()) {
+            String currencyName = item.toString();
+            dcm.addElement(currencyName);
+        }
+        return dcm;
+    }
 }

@@ -72,15 +72,24 @@ public class ProductModel {
         return statu;
     }
     
-    public void productAllResult(String search){
+    public void productAllResult(String search, int statu){
         prls.clear();
         String query = "";
+        String addQueryAll = "";
+        String addQuerySearch = "";
+        if ( statu == 0 ) {
+            addQueryAll = " where prstock > 0";
+            addQuerySearch = " and prstock > 0";
+        }else {
+            addQueryAll = " order by prstock asc";
+            addQuerySearch = " order by prstock asc";
+        }
         if ( search.equals("") ){
-            query = "select * from product";
+            query = "select * from product" + addQueryAll;
         } else {
-            query = "SELECT * FROM product WHERE prtitle like '%" + search + "%' or prprice like '%" + search + "%' "
+            query = "SELECT * FROM product WHERE (prtitle like '%" + search + "%' or prprice like '%" + search + "%' "
                     + "or prbarcode like '%" + search + "%' or prshelf like '%" + search + "%' or prstock like '%" + search + "%' "
-                    + "or prnote like '%" + search + "%' ";
+                    + "or prnote like '%" + search + "%') " + addQuerySearch;
         }
         try {
             DB db = new DB();
@@ -124,4 +133,32 @@ public class ProductModel {
         return dtm;
     }
     
+    public int stockDecrease(int quantity, int prid) {
+        int statu = -1;
+        int stock = 0;
+        try {
+            DB db = new DB();
+            String query = "select * from product where prid = '" + prid + "' ";
+            ResultSet rs = db.fncPre(query).executeQuery();
+            while (rs.next()) {
+                stock = rs.getInt("prstock");
+                stock -= quantity;
+            }
+            db.close();
+        } catch (Exception e) {
+            System.err.println("stockDecrease Error : " + e);
+        }
+        try {
+            DB db = new DB();
+            String query = " update product set prstock = ? where prid = ? ";
+            PreparedStatement pre = db.fncPre(query);
+            pre.setInt(1, stock);
+            pre.setInt(2, prid);
+            statu = pre.executeUpdate();
+            db.close();
+        } catch (Exception e) {
+            System.err.println("stockDecrease Error : " + e);
+        }
+        return statu;
+    }    
 }

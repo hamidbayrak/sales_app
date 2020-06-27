@@ -7,13 +7,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
+import props.Currency;
 import props.User;
 
 public class Util {
     
     public static User us = new User();
-    public static ArrayList<String> eName = new ArrayList<>();
-    public static ArrayList<Double> eValue = new ArrayList<>();
+    public static List<Currency> cls = new ArrayList<>();
     public static final String apikey = "49lY1z5gyd0yOTl3UwyrmofeGhbsWFuU";
     public static final String url = "http://dataservice.accuweather.com/forecasts/v1/daily/5day/318251";
     
@@ -39,28 +39,29 @@ public class Util {
         return null;
     }
 
-    public List xmlRead(){
+    public List<Currency> xmlRead(){
         try {
             String url = "https://www.tcmb.gov.tr/kurlar/today.xml";
             String data = Jsoup.connect(url).timeout(30000).ignoreContentType(true).get().toString();
             Document doc = Jsoup.parse(data, "", Parser.xmlParser());
             Elements elmnts = doc.getElementsByTag("Currency");
-            eName.add("TÜRK LİRASI");
-            eValue.add(1.0);
-            
+            Currency cr = new Currency();
+            cr.setCurrencyName("TÜRK LİRASI");
+            cr.setForexSelling(1.0);
+            cls.add(cr);
             for (Element item : elmnts ){
                 String Isim = item.getElementsByTag("Isim").text();
                 if ( Isim.contains("ABD DOLAR") || Isim.contains("EURO") || Isim.contains("STERLİN")){
-                    double ForexSelling = Double.parseDouble(item.getElementsByTag("ForexSelling").text());
-                    eName.add(Isim);
-                    eValue.add(ForexSelling);
+                    double BanknoteSelling = Double.parseDouble(item.getElementsByTag("BanknoteSelling").text());
+                    Currency crt = new Currency();
+                    crt.setCurrencyName(Isim);
+                    crt.setForexSelling(BanknoteSelling);
+                    cls.add(crt);
                 }
             }
         } catch (Exception e) {
             System.err.println("xmlRead Error: "+e);
         }
-        return eName;
+        return cls;
     }
-    
-    
 }

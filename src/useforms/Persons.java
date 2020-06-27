@@ -21,7 +21,7 @@ public class Persons extends javax.swing.JFrame {
     
     public Persons() {
         initComponents();
-        pm.productAllResult("");
+        pm.productAllResult("", 0);
         tblproduct.setModel(pm.productTable());
         basketRefresh();
         lblperson.setText(Util.us.getUname());
@@ -85,12 +85,12 @@ public class Persons extends javax.swing.JFrame {
         tblBasket.setGridColor(new java.awt.Color(255, 255, 255));
         jScrollPane2.setViewportView(tblBasket);
 
-        jLabel5.setFont(new java.awt.Font("Dialog", 1, 20)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Arial", 1, 20)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(204, 0, 0));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel5.setText("Toplam Tutar:");
 
-        lblTotal.setFont(new java.awt.Font("Dialog", 1, 20)); // NOI18N
+        lblTotal.setFont(new java.awt.Font("Arial", 1, 20)); // NOI18N
         lblTotal.setForeground(new java.awt.Color(204, 0, 0));
         lblTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblTotal.setText(" TL");
@@ -179,11 +179,11 @@ public class Persons extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblproduct);
 
-        lblProduct.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblProduct.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         lblProduct.setForeground(new java.awt.Color(0, 153, 0));
         lblProduct.setText("lblProduct");
 
-        lblPrice.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblPrice.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         lblPrice.setForeground(new java.awt.Color(0, 153, 0));
         lblPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblPrice.setText("TL");
@@ -328,7 +328,7 @@ public class Persons extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String search = txtSearch.getText().trim();
-        pm.productAllResult(search);
+        pm.productAllResult(search, 0);
         tblproduct.setModel(pm.productTable());
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -337,6 +337,7 @@ public class Persons extends javax.swing.JFrame {
         if ( answer == 0){
             bm.completeBasket();
             basketRefresh();
+            jButton1ActionPerformed(null);
         }
     }//GEN-LAST:event_btnSellActionPerformed
 
@@ -354,15 +355,15 @@ public class Persons extends javax.swing.JFrame {
                 lblTotal.setText("₺"+convert);
                 break;
             case 1:
-                tot = convert / Util.eValue.get(1);
+                tot = convert / Util.cls.get(1).getForexSelling();
                 lblTotal.setText("$"+numberFormat.format(tot));
                 break;
             case 2:
-                tot = convert / Util.eValue.get(2);
+                tot = convert / Util.cls.get(2).getForexSelling();
                 lblTotal.setText("€"+numberFormat.format(tot));
                 break;
             case 3:
-                tot = convert / Util.eValue.get(3);
+                tot = convert / Util.cls.get(3).getForexSelling();
                 lblTotal.setText("£"+numberFormat.format(tot));
                 break;
             default:

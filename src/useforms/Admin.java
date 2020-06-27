@@ -88,7 +88,7 @@ public class Admin extends javax.swing.JFrame {
     }
     
     private void productResultRefresh(){
-        prmd.productAllResult("");
+        prmd.productAllResult("", 1);
         tblProduct.setModel(prmd.productTable());
     }
     

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 import props.Basket;
+import props.Currency;
 import useutils.DB;
 import useutils.Util;
 
@@ -34,17 +35,20 @@ public class BasketModel {
     bls.clear();
     try {
         DB db = new DB();
-        String query = "SELECT b.bid, p.prtitle, p.prprice, u.uname, b.bdate from basket as b inner JOIN product as p on b.bpid = p.prid  INNER JOIN user as u ON b.bprid = u.uid  where b.bstatu = 1 and b.bprid = ?";
+        String query = "SELECT b.bid, p.prid, p.prstock, p.prtitle, p.prprice, u.uname, b.bdate from basket as b inner JOIN product as p on b.bpid = p.prid  INNER JOIN user as u ON b.bprid = u.uid  where b.bstatu = 1  and b.bprid = ?";
         PreparedStatement pre = db.fncPre(query);
         pre.setInt(1, Util.us.getUid());
         ResultSet rs = pre.executeQuery();
         while( rs.next() ) {
             Basket b = new Basket();
             b.setBid(rs.getInt("bid"));
-            b.setPrtitle(rs.getString("prtitle"));
-            b.setPrprice(rs.getDouble("prprice"));
-            b.setUname(rs.getString("uname"));
-            b.setBdate(rs.getString("bdate"));
+                b.setBid(rs.getInt("bid"));
+                b.setBpid(rs.getInt("prid"));
+                b.setPrstock(rs.getInt("prstock"));
+                b.setPrtitle(rs.getString("prtitle"));
+                b.setPrprice(rs.getDouble("prprice"));
+                b.setUname(rs.getString("uname"));
+                b.setBdate(rs.getString("bdate"));
             bls.add(b);
             }
         db.close();
@@ -66,7 +70,7 @@ public class BasketModel {
     } catch (Exception e) {
          System.err.println("basketInsert Error: " + e);
     }
-                return statu;
+    return statu;
     }
     
     public int basketRemove(List<Integer> ids){
@@ -98,6 +102,17 @@ public class BasketModel {
             PreparedStatement pre = db.fncPre(query);
             pre.setInt(1, Util.us.getUid());
             statu = pre.executeUpdate();
+            if (statu > 0) {
+                // stok düş
+                for (Basket bl : bls) {
+                    int stok = bl.getPrstock() - 1;
+                    String queryUp = "update product set prstock = ? where prid = ?";
+                    PreparedStatement preu = db.fncPre(queryUp);
+                    preu.setInt(1, stok);
+                    preu.setInt(2, bl.getBpid());
+                    preu.executeUpdate();
+                }
+            }            
             db.close();
         } catch (Exception e) {
             System.err.println("closeBasket Error: " + e);
@@ -107,8 +122,8 @@ public class BasketModel {
 
     public DefaultComboBoxModel<String> exchangeCombobox() {
         DefaultComboBoxModel<String> dcm = new DefaultComboBoxModel<>();
-        for (Object item : ut.xmlRead()) {
-            String currencyName = item.toString();
+        for (Currency item : ut.xmlRead()) {
+            String currencyName = item.getCurrencyName();
             dcm.addElement(currencyName);
         }
         return dcm;
